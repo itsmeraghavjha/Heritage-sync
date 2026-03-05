@@ -19,299 +19,202 @@
 
   /* ── Sidebar ── */
   .sidebar {
-    width: var(--sidebar); flex-shrink: 0;
-    background: var(--text);
-    display: flex; flex-direction: column;
-    padding: 0;
+    width: var(--sidebar); flex-shrink: 0; background: var(--text);
+    display: flex; flex-direction: column; padding: 0;
     position: fixed; top: 0; left: 0; bottom: 0;
-    z-index: 100;
-    box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+    z-index: 100; box-shadow: 4px 0 20px rgba(0,0,0,0.15);
   }
-
   .sidebar-header {
-    padding: 24px 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
     display: flex; align-items: center; gap: 12px;
   }
-
   .sidebar-logo {
     width: 44px; height: 44px;
-    background: linear-gradient(135deg, var(--green), var(--green-dark));
-    border-radius: 50%;
+    border-radius: 50%; overflow: hidden;
+    border: 2px solid var(--red); flex-shrink: 0;
+    background: white;
     display: flex; align-items: center; justify-content: center;
-    border: 2px solid var(--red);
-    flex-shrink: 0;
   }
-  .sidebar-logo svg { width: 22px; height: 22px; fill: white; }
-
-  .sidebar-title h2 {
-    font-family: 'Fraunces', serif;
-    font-size: 16px; color: white; line-height: 1;
-  }
+  .sidebar-logo img { width: 38px; height: 38px; object-fit: contain; }
+  .sidebar-title h2 { font-family: 'Fraunces', serif; font-size: 16px; color: white; line-height: 1; }
   .sidebar-title span { font-size: 10px; color: rgba(255,255,255,0.45); letter-spacing: 1.5px; text-transform: uppercase; }
-
   .sidebar-nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
-
   .nav-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 14px;
-    border-radius: 10px;
-    color: rgba(255,255,255,0.6);
-    font-size: 13.5px; font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    border-radius: 10px; color: rgba(255,255,255,0.6);
+    font-size: 13.5px; font-weight: 500; cursor: pointer; transition: all 0.2s;
     border: none; background: transparent; width: 100%; text-align: left;
   }
   .nav-item:hover { background: rgba(255,255,255,0.07); color: white; }
   .nav-item.active { background: var(--green); color: white; }
   .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
-
-  .sidebar-footer {
-    padding: 16px 12px;
-    border-top: 1px solid rgba(255,255,255,0.08);
-    display: flex; flex-direction: column; gap: 6px;
-  }
-
+  .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; gap: 6px; }
   .sidebar-footer a {
-    display: flex; align-items: center; gap: 8px;
-    padding: 9px 14px; border-radius: 10px;
-    color: rgba(255,255,255,0.5); font-size: 13px; text-decoration: none;
-    transition: all 0.2s;
+    display: flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 10px;
+    color: rgba(255,255,255,0.5); font-size: 13px; text-decoration: none; transition: all 0.2s;
   }
   .sidebar-footer a:hover { background: rgba(255,255,255,0.07); color: white; }
   .sidebar-footer a svg { width: 15px; height: 15px; }
 
   /* ── Main ── */
   .main { margin-left: var(--sidebar); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
-
   .topbar {
-    background: white;
-    border-bottom: 1px solid var(--border);
-    padding: 16px 28px;
+    background: white; border-bottom: 1px solid var(--border); padding: 16px 28px;
     display: flex; align-items: center; justify-content: space-between;
-    position: sticky; top: 0; z-index: 50;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    position: sticky; top: 0; z-index: 50; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   }
   .topbar h1 { font-family: 'Fraunces', serif; font-size: 20px; color: var(--text); }
   .topbar-right { display: flex; align-items: center; gap: 12px; }
-
-  .stats-strip {
-    display: grid; grid-template-columns: repeat(4, 1fr);
-    gap: 16px; padding: 20px 28px 0;
-  }
-
+  .stats-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 20px 28px 0; }
   .stat-card {
-    background: white;
-    border-radius: 14px;
-    padding: 16px 18px;
-    border: 1px solid var(--border);
-    display: flex; align-items: center; gap: 14px;
+    background: white; border-radius: 14px; padding: 16px 18px;
+    border: 1px solid var(--border); display: flex; align-items: center; gap: 14px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.03);
   }
-  .stat-icon {
-    width: 42px; height: 42px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
+  .stat-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .stat-icon svg { width: 20px; height: 20px; }
   .stat-icon.green { background: var(--green-light); color: var(--green); }
-  .stat-icon.red { background: var(--red-light); color: var(--red); }
-  .stat-icon.blue { background: #E3F2FD; color: #1565C0; }
-  .stat-icon.orange { background: #FFF3E0; color: #E65100; }
+  .stat-icon.red   { background: var(--red-light);   color: var(--red); }
+  .stat-icon.blue  { background: #E3F2FD; color: #1565C0; }
+  .stat-icon.orange{ background: #FFF3E0; color: #E65100; }
   .stat-value { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; color: var(--text); }
   .stat-label { font-size: 11.5px; color: var(--text-muted); }
 
-  /* ── Upload area ── */
+  /* ── Content area ── */
   .content { padding: 20px 28px 40px; flex: 1; }
-
-  .panel {
-    background: white; border-radius: 16px;
-    border: 1px solid var(--border);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-    overflow: hidden; margin-bottom: 20px;
-  }
-
-  .panel-header {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 10px;
-  }
+  .panel { background: white; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.03); overflow: hidden; margin-bottom: 20px; }
+  .panel-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
   .panel-header h3 { font-family: 'Fraunces', serif; font-size: 16px; }
   .panel-header svg { width: 18px; height: 18px; color: var(--green); }
   .panel-body { padding: 20px; }
 
   /* Upload drop zone */
   .drop-zone {
-    border: 2px dashed var(--border);
-    border-radius: 12px;
-    padding: 32px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
+    border: 2px dashed var(--border); border-radius: 12px; padding: 32px;
+    text-align: center; cursor: pointer; transition: all 0.2s; position: relative;
   }
-  .drop-zone:hover, .drop-zone.dragover {
-    border-color: var(--green);
-    background: var(--green-light);
-  }
+  .drop-zone:hover, .drop-zone.dragover { border-color: var(--green); background: var(--green-light); }
   .drop-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
   .drop-zone svg { width: 40px; height: 40px; color: var(--green); margin-bottom: 10px; }
   .drop-zone p { font-size: 14px; color: var(--text-muted); }
   .drop-zone strong { color: var(--green); }
-
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
   .form-group { display: flex; flex-direction: column; gap: 5px; }
   .form-group label { font-size: 12px; font-weight: 600; color: var(--text); letter-spacing: 0.4px; }
   .form-group input, .form-group select, .form-group textarea {
-    padding: 10px 12px;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    background: var(--cream);
+    padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s; background: var(--cream);
   }
   .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-    border-color: var(--green);
-    box-shadow: 0 0 0 3px rgba(30,139,26,0.08);
-    background: white;
+    border-color: var(--green); box-shadow: 0 0 0 3px rgba(30,139,26,0.08); background: white;
   }
   .form-group textarea { resize: vertical; min-height: 80px; }
-
-  .upload-preview {
-    display: none;
-    margin-top: 12px;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-  }
+  .upload-preview { display: none; margin-top: 12px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
   .upload-preview img { width: 100%; max-height: 200px; object-fit: contain; background: #f5f5f5; }
 
   .btn {
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: none;
-    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 20px; border-radius: 8px; font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    border: none; display: inline-flex; align-items: center; gap: 6px;
   }
   .btn svg { width: 15px; height: 15px; }
   .btn-primary { background: var(--green); color: white; }
   .btn-primary:hover { background: var(--green-dark); box-shadow: 0 4px 12px rgba(30,139,26,0.25); }
-  .btn-danger { background: var(--red-light); color: var(--red); }
+  .btn-danger  { background: var(--red-light); color: var(--red); }
   .btn-danger:hover { background: var(--red); color: white; }
-  .btn-ghost { background: transparent; color: var(--text-muted); border: 1.5px solid var(--border); }
+  .btn-ghost  { background: transparent; color: var(--text-muted); border: 1.5px solid var(--border); }
   .btn-ghost:hover { border-color: var(--green); color: var(--green); }
   .btn-sm { padding: 6px 12px; font-size: 12px; }
 
-  /* ── Grid ── */
-  .artworks-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 16px;
-  }
-
-  .artwork-card {
-    background: white;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    overflow: hidden;
-    transition: box-shadow 0.2s, transform 0.2s;
-  }
+  /* ── Artwork grid ── */
+  .artworks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+  .artwork-card { background: white; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; transition: box-shadow 0.2s, transform 0.2s; }
   .artwork-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.08); transform: translateY(-2px); }
   .artwork-card.inactive { opacity: 0.5; }
-
-  .artwork-thumb {
-    width: 100%; aspect-ratio: 1;
-    object-fit: cover; display: block;
-    background: #f0f0f0;
-  }
-
+  .artwork-thumb { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #f0f0f0; }
   .artwork-info { padding: 10px 12px; }
   .artwork-info h4 { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .artwork-info .cat-badge {
-    display: inline-block;
-    font-size: 10px; font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 6px;
-    background: var(--green-light);
-    color: var(--green-dark);
-    letter-spacing: 0.3px;
-    margin-bottom: 8px;
-  }
-  .artwork-info .desc { font-size: 11.5px; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 10px; }
-
+  .cat-badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 6px; background: var(--green-light); color: var(--green-dark); letter-spacing: 0.3px; margin-bottom: 8px; }
   .artwork-actions { display: flex; gap: 6px; flex-wrap: wrap; }
 
   /* Filter bar */
   .filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
   .filter-bar input {
-    flex: 1; min-width: 180px;
-    padding: 9px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13.5px;
-    outline: none;
-    transition: border-color 0.2s;
+    flex: 1; min-width: 180px; padding: 9px 14px; border: 1.5px solid var(--border);
+    border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13.5px; outline: none; transition: border-color 0.2s;
   }
   .filter-bar input:focus { border-color: var(--green); }
   .filter-bar select { padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; background: white; }
 
+  /* ── AI Content Status panel ── */
+  .ai-panel-header {
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .ai-panel-header-left { display: flex; align-items: center; gap: 10px; }
+  .ai-panel-header-left svg { width: 18px; height: 18px; color: var(--green); flex-shrink: 0; }
+  .ai-panel-header h3 { font-family: 'Fraunces', serif; font-size: 15px; }
+  .ai-panel-header p { font-size: 11.5px; color: var(--text-muted); margin-top: 1px; }
+  .cat-status-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 1px; background: var(--border);
+  }
+  .cat-status-item { background: white; padding: 12px 16px; display: flex; flex-direction: column; gap: 5px; }
+  .cat-status-name { font-size: 12px; font-weight: 600; color: var(--text); }
+  .cat-status-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 6px; width: fit-content;
+  }
+  .cat-status-badge.ready      { background: var(--green-light); color: var(--green-dark); }
+  .cat-status-badge.generating { background: #FFF8E1; color: #E65100; }
+  .cat-status-badge.error      { background: var(--red-light); color: var(--red); }
+  .cat-status-badge.pending    { background: #F5F5F5; color: #757575; }
+  .cat-status-time { font-size: 10px; color: var(--text-muted); }
+  .cat-regen-btn {
+    font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 5px;
+    border: 1px solid var(--border); background: transparent; color: var(--text-muted);
+    cursor: pointer; transition: all 0.15s; width: fit-content;
+  }
+  .cat-regen-btn:hover:not(:disabled) { border-color: var(--green); color: var(--green); }
+  .cat-regen-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { display: inline-block; animation: spin 1s linear infinite; }
+
   /* Edit modal */
   .modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.4);
-    backdrop-filter: blur(4px);
-    z-index: 200;
-    display: none; align-items: center; justify-content: center;
-    padding: 20px;
+    position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+    z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px;
   }
   .modal-overlay.show { display: flex; animation: fadeIn 0.2s ease; }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
   .modal {
-    background: white;
-    border-radius: 20px;
-    padding: 28px;
-    width: 100%;
-    max-width: 500px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-    animation: modalIn 0.3s cubic-bezier(0.22,1,0.36,1);
+    background: white; border-radius: 20px; padding: 28px; width: 100%; max-width: 500px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: modalIn 0.3s cubic-bezier(0.22,1,0.36,1);
   }
   @keyframes modalIn { from { transform: scale(0.9) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
-
   .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
   .modal-header h3 { font-family: 'Fraunces', serif; font-size: 18px; }
-  .modal-close { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--border); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: all 0.2s; }
+  .modal-close {
+    width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--border);
+    background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted); transition: all 0.2s;
+  }
   .modal-close:hover { background: var(--red-light); border-color: var(--red); color: var(--red); }
   .modal-close svg { width: 14px; height: 14px; }
   .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
 
   /* Toast */
   .toast {
-    position: fixed; bottom: 24px; right: 24px;
-    background: var(--text);
-    color: white;
-    padding: 12px 18px;
-    border-radius: 10px;
-    font-size: 13.5px;
-    font-weight: 500;
-    z-index: 999;
-    transform: translateY(100px);
-    opacity: 0;
-    transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
-    display: flex; align-items: center; gap: 8px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    position: fixed; bottom: 24px; right: 24px; background: var(--text); color: white;
+    padding: 12px 18px; border-radius: 10px; font-size: 13.5px; font-weight: 500; z-index: 999;
+    transform: translateY(100px); opacity: 0; transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
+    display: flex; align-items: center; gap: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.2);
   }
   .toast.show { transform: translateY(0); opacity: 1; }
   .toast.success { background: var(--green-dark); }
-  .toast.error { background: var(--red); }
+  .toast.error   { background: var(--red); }
   .toast svg { width: 16px; height: 16px; flex-shrink: 0; }
 
   @media (max-width: 900px) {
@@ -328,25 +231,27 @@
 <aside class="sidebar">
   <div class="sidebar-header">
     <div class="sidebar-logo">
-      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+      <img src="/static/logo.png" alt="Heritage Logo">
     </div>
     <div class="sidebar-title">
       <h2>Heritage</h2>
       <span>Admin Panel</span>
     </div>
   </div>
-
   <nav class="sidebar-nav">
-    <button class="nav-item active" onclick="showSection('upload')">
+    <button class="nav-item active" onclick="showSection('upload', event)">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3l5 5h-3v4h-4v-4H7l5-5z"/></svg>
       <span>Upload Artwork</span>
     </button>
-    <button class="nav-item" onclick="showSection('manage')">
+    <button class="nav-item" onclick="showSection('manage', event)">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
       <span>Manage Artworks</span>
     </button>
+    <button class="nav-item" onclick="showSection('ai', event)">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2zm1 14.93V15h-2v1.93A8.001 8.001 0 014.07 13H6v-2H4.07A8.001 8.001 0 0111 4.07V6h2V4.07A8.001 8.001 0 0119.93 11H18v2h1.93A8.001 8.001 0 0113 16.93zM12 13a1 1 0 110-2 1 1 0 010 2z"/></svg>
+      <span>AI Content</span>
+    </button>
   </nav>
-
   <div class="sidebar-footer">
     <a href="/" target="_blank">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
@@ -390,7 +295,7 @@
 
   <div class="content">
 
-    <!-- Upload Section -->
+    <!-- ── Upload Section ── -->
     <div id="section-upload">
       <div class="panel">
         <div class="panel-header">
@@ -404,11 +309,9 @@
             <p><strong>Click to browse</strong> or drag & drop image here</p>
             <p style="font-size:12px;margin-top:4px;">JPG, PNG, GIF, WEBP supported</p>
           </div>
-
           <div class="upload-preview" id="uploadPreview">
             <img id="previewImg" src="" alt="Preview">
           </div>
-
           <div class="form-row">
             <div class="form-group">
               <label>TITLE *</label>
@@ -423,24 +326,21 @@
               </select>
             </div>
           </div>
-
-          <div class="form-group" style="margin-top:14px;">
-            <label>DESCRIPTION</label>
-            <textarea id="uploadDesc" placeholder="Brief product description for the sales team..."></textarea>
-          </div>
-
-          <div style="display:flex;gap:10px;margin-top:16px;">
+          <div style="display:flex;gap:10px;margin-top:16px;align-items:center;">
             <button class="btn btn-primary" onclick="uploadArtwork()">
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
               Upload Artwork
             </button>
             <button class="btn btn-ghost" onclick="clearUploadForm()">Clear</button>
+            <span style="font-size:11.5px;color:var(--text-muted);margin-left:4px;">
+              ✨ AI will automatically update the quiz &amp; summary for this category
+            </span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Manage Section -->
+    <!-- ── Manage Section ── -->
     <div id="section-manage" style="display:none;">
       <div class="filter-bar">
         <input type="text" id="searchInput" placeholder="🔍  Search artworks..." oninput="filterArtworks()">
@@ -456,6 +356,35 @@
         </button>
       </div>
       <div class="artworks-grid" id="artworksGrid"></div>
+    </div>
+
+    <!-- ── AI Content Section ── -->
+    <div id="section-ai" style="display:none;">
+      <div class="panel">
+        <div class="ai-panel-header">
+          <div class="ai-panel-header-left">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2zm1 14.93V15h-2v1.93A8.001 8.001 0 014.07 13H6v-2H4.07A8.001 8.001 0 0111 4.07V6h2V4.07A8.001 8.001 0 0119.93 11H18v2h1.93A8.001 8.001 0 0113 16.93zM12 13a1 1 0 110-2 1 1 0 010 2z"/></svg>
+            <div>
+              <h3>AI-Generated Content</h3>
+              <p>Audio summaries and quiz questions — auto-updated whenever artworks change</p>
+            </div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="loadContentStatus()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+            Refresh
+          </button>
+        </div>
+
+        <!-- API key notice if needed -->
+        <div id="apiKeyNotice" style="display:none;padding:12px 20px;background:#FFF8E1;border-bottom:1px solid #FFE082;font-size:13px;color:#E65100;">
+          ⚠️ Set the <code>ANTHROPIC_API_KEY</code> environment variable on the server to enable auto-generation.
+          Existing seeded content still works for sales reps.
+        </div>
+
+        <div class="cat-status-grid" id="catStatusGrid">
+          <div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;grid-column:1/-1;">Loading…</div>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -483,10 +412,6 @@
         {% endfor %}
       </select>
     </div>
-    <div class="form-group" style="margin-bottom:14px;">
-      <label>DESCRIPTION</label>
-      <textarea id="editDesc" style="min-height:100px;"></textarea>
-    </div>
     <div class="form-group">
       <label>VISIBILITY</label>
       <select id="editActive">
@@ -508,45 +433,49 @@
 </div>
 
 <script>
-let allArtworks = [];
+let allArtworks   = [];
+let contentStatus = {}; // category → { status, updated_at }
+let pollTimer     = null;
 
-function showSection(name) {
-  document.getElementById('section-upload').style.display = name === 'upload' ? '' : 'none';
-  document.getElementById('section-manage').style.display = name === 'manage' ? '' : 'none';
-  document.getElementById('pageTitle').textContent = name === 'upload' ? 'Upload Artwork' : 'Manage Artworks';
+// ── Section nav ──────────────────────────────────────────────────────────────
+function showSection(name, event) {
+  ['upload','manage','ai'].forEach(s => {
+    document.getElementById(`section-${s}`).style.display = s === name ? '' : 'none';
+  });
+  const titles = { upload: 'Upload Artwork', manage: 'Manage Artworks', ai: 'AI Content' };
+  document.getElementById('pageTitle').textContent = titles[name];
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+  if (event) event.currentTarget.classList.add('active');
   if (name === 'manage') loadAllArtworks();
+  if (name === 'ai')    loadContentStatus();
 }
 
-// ── Stats ──
+// ── Stats ────────────────────────────────────────────────────────────────────
 async function loadStats() {
   try {
-    const res = await fetch('/api/artworks/all');
+    const res  = await fetch('/api/artworks/all');
     const data = await res.json();
     allArtworks = data;
     const active = data.filter(a => a.is_active);
-    const cats = new Set(data.map(a => a.category));
-    document.getElementById('statTotal').textContent = data.length;
-    document.getElementById('statActive').textContent = active.length;
-    document.getElementById('statCats').textContent = cats.size;
+    const cats   = new Set(data.map(a => a.category));
+    document.getElementById('statTotal').textContent    = data.length;
+    document.getElementById('statActive').textContent   = active.length;
+    document.getElementById('statCats').textContent     = cats.size;
     document.getElementById('statInactive').textContent = data.length - active.length;
   } catch(e) { console.error(e); }
 }
 
-// ── Upload ──
+// ── Upload ───────────────────────────────────────────────────────────────────
 const fileInput = document.getElementById('fileInput');
-const dropZone = document.getElementById('dropZone');
+const dropZone  = document.getElementById('dropZone');
 
-dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('dragover'); });
 dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
 dropZone.addEventListener('drop', e => {
-  e.preventDefault();
-  dropZone.classList.remove('dragover');
+  e.preventDefault(); dropZone.classList.remove('dragover');
   const file = e.dataTransfer.files[0];
   if (file) previewFile(file);
 });
-
 fileInput.addEventListener('change', () => { if (fileInput.files[0]) previewFile(fileInput.files[0]); });
 
 function previewFile(file) {
@@ -570,16 +499,16 @@ async function uploadArtwork() {
   const fd = new FormData();
   fd.append('file', file);
   fd.append('title', title);
-  fd.append('description', document.getElementById('uploadDesc').value);
   fd.append('category', document.getElementById('uploadCategory').value);
 
   try {
-    const res = await fetch('/api/artwork', { method: 'POST', body: fd });
+    const res  = await fetch('/api/artwork', { method: 'POST', body: fd });
     const data = await res.json();
     if (data.success) {
-      showToast('Artwork uploaded successfully!', 'success');
+      showToast('Uploaded! AI is updating quiz & summary…', 'success');
       clearUploadForm();
       loadStats();
+      startPolling();   // watch AI generation progress
     } else {
       showToast(data.error || 'Upload failed', 'error');
     }
@@ -588,23 +517,22 @@ async function uploadArtwork() {
 
 function clearUploadForm() {
   fileInput.value = '';
-  document.getElementById('uploadTitle').value = '';
-  document.getElementById('uploadDesc').value = '';
+  document.getElementById('uploadTitle').value   = '';
   document.getElementById('uploadPreview').style.display = 'none';
 }
 
-// ── Manage ──
+// ── Manage ───────────────────────────────────────────────────────────────────
 async function loadAllArtworks() {
-  const res = await fetch('/api/artworks/all');
+  const res   = await fetch('/api/artworks/all');
   allArtworks = await res.json();
   renderGrid(allArtworks);
 }
 
 function filterArtworks() {
-  const q = document.getElementById('searchInput').value.toLowerCase();
+  const q   = document.getElementById('searchInput').value.toLowerCase();
   const cat = document.getElementById('filterCategory').value;
   const filtered = allArtworks.filter(a => {
-    const matchQ = !q || a.title.toLowerCase().includes(q) || a.description.toLowerCase().includes(q);
+    const matchQ   = !q   || a.title.toLowerCase().includes(q);
     const matchCat = !cat || a.category === cat;
     return matchQ && matchCat;
   });
@@ -623,7 +551,6 @@ function renderGrid(artworks) {
       <div class="artwork-info">
         <div class="cat-badge">${a.category}</div>
         <h4 title="${a.title}">${a.title}</h4>
-        <p class="desc">${a.description || '–'}</p>
         <div class="artwork-actions">
           <button class="btn btn-ghost btn-sm" onclick="openEdit(${a.id})">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
@@ -632,26 +559,23 @@ function renderGrid(artworks) {
           <button class="btn btn-sm ${a.is_active ? 'btn-ghost' : 'btn-primary'}" onclick="toggleActive(${a.id}, ${a.is_active})">
             ${a.is_active ? 'Hide' : 'Show'}
           </button>
-          <button class="btn btn-danger btn-sm" onclick="deleteArtwork(${a.id}, '${a.title.replace(/'/g,'\\\'') }')">
+          <button class="btn btn-danger btn-sm" onclick="deleteArtwork(${a.id}, '${a.title.replace(/'/g,"\\'")}')">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
           </button>
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 function openEdit(id) {
   const a = allArtworks.find(x => x.id === id);
   if (!a) return;
-  document.getElementById('editId').value = id;
-  document.getElementById('editTitle').value = a.title;
-  document.getElementById('editDesc').value = a.description;
+  document.getElementById('editId').value       = id;
+  document.getElementById('editTitle').value    = a.title;
   document.getElementById('editCategory').value = a.category;
-  document.getElementById('editActive').value = a.is_active;
+  document.getElementById('editActive').value   = a.is_active;
   document.getElementById('editModal').classList.add('show');
 }
-
 function closeModal() { document.getElementById('editModal').classList.remove('show'); }
 
 async function saveEdit() {
@@ -660,16 +584,16 @@ async function saveEdit() {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      title: document.getElementById('editTitle').value,
-      description: document.getElementById('editDesc').value,
-      category: document.getElementById('editCategory').value,
+      title:     document.getElementById('editTitle').value,
+      category:  document.getElementById('editCategory').value,
       is_active: parseInt(document.getElementById('editActive').value)
     })
   });
   closeModal();
-  showToast('Saved successfully!', 'success');
+  showToast('Saved! AI is updating content…', 'success');
   await loadAllArtworks();
   loadStats();
+  startPolling();
 }
 
 async function toggleActive(id, current) {
@@ -678,30 +602,110 @@ async function toggleActive(id, current) {
   await fetch(`/api/artwork/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title: a.title, description: a.description, category: a.category, is_active: current ? 0 : 1 })
+    body: JSON.stringify({ title: a.title, category: a.category, is_active: current ? 0 : 1 })
   });
-  showToast(current ? 'Artwork hidden' : 'Artwork shown', 'success');
+  showToast(current ? 'Artwork hidden — AI updating…' : 'Artwork shown — AI updating…', 'success');
   await loadAllArtworks();
   loadStats();
+  startPolling();
 }
 
 async function deleteArtwork(id, title) {
   if (!confirm(`Delete "${title}"? This cannot be undone.`)) return;
   await fetch(`/api/artwork/${id}`, { method: 'DELETE' });
-  showToast('Artwork deleted', 'success');
+  showToast('Deleted — AI is updating content…', 'success');
   await loadAllArtworks();
   loadStats();
+  startPolling();
 }
 
-// ── Toast ──
+// ── AI Content Status ─────────────────────────────────────────────────────────
+async function loadContentStatus() {
+  try {
+    const res  = await fetch('/api/content');
+    const data = await res.json();
+    contentStatus = data.statuses || {};
+    renderContentStatus(data);
+    // Keep polling if any category is still generating
+    const anyGenerating = Object.values(contentStatus).some(s => s.status === 'generating');
+    if (anyGenerating) startPolling();
+    else stopPolling();
+  } catch(e) { console.error(e); }
+}
+
+function renderContentStatus(data) {
+  const grid     = document.getElementById('catStatusGrid');
+  const statuses = data.statuses || {};
+  const cats     = Object.keys(statuses);
+
+  if (cats.length === 0) {
+    grid.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;grid-column:1/-1;">No content generated yet.</div>';
+    return;
+  }
+
+  // Show API key notice if any category errored
+  const anyError = cats.some(c => statuses[c].status === 'error');
+  document.getElementById('apiKeyNotice').style.display = anyError ? 'block' : 'none';
+
+  const statusLabel = { ready: '✓ Ready', generating: '⟳ Updating…', error: '✗ Error', pending: '· Pending' };
+  const statusClass = { ready: 'ready', generating: 'generating', error: 'error', pending: 'pending' };
+
+  grid.innerHTML = cats.map(cat => {
+    const s   = statuses[cat];
+    const cls = statusClass[s.status] || 'pending';
+    const lbl = statusLabel[s.status] || s.status;
+    const ts  = s.updated_at ? new Date(s.updated_at).toLocaleString('en-IN', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : '—';
+    const isGenerating = s.status === 'generating';
+    return `
+      <div class="cat-status-item">
+        <div class="cat-status-name">${cat}</div>
+        <div class="cat-status-badge ${cls}">
+          ${isGenerating ? '<span class="spin">⟳</span>' : ''} ${lbl}
+        </div>
+        <div class="cat-status-time">Updated: ${ts}</div>
+        <button class="cat-regen-btn" ${isGenerating ? 'disabled' : ''} onclick="triggerRegen('${cat}', this)">
+          Regenerate
+        </button>
+      </div>`;
+  }).join('');
+}
+
+async function triggerRegen(category, btn) {
+  btn.disabled = true;
+  btn.textContent = 'Queued…';
+  try {
+    await fetch(`/api/content/${encodeURIComponent(category)}/regenerate`, { method: 'POST' });
+    showToast(`Regenerating "${category}"…`, 'success');
+    setTimeout(() => loadContentStatus(), 800); // small delay so status flips to 'generating'
+    startPolling();
+  } catch(e) {
+    showToast('Failed to trigger regeneration', 'error');
+    btn.disabled = false;
+    btn.textContent = 'Regenerate';
+  }
+}
+
+// Poll every 3s while any category is generating; auto-stops when all done
+function startPolling() {
+  if (pollTimer) return; // already running
+  pollTimer = setInterval(async () => {
+    await loadContentStatus();
+    const anyGenerating = Object.values(contentStatus).some(s => s.status === 'generating');
+    if (!anyGenerating) stopPolling();
+  }, 3000);
+}
+function stopPolling() {
+  if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+}
+
+// ── Toast ────────────────────────────────────────────────────────────────────
 function showToast(msg, type = 'success') {
   const toast = document.getElementById('toast');
   document.getElementById('toastMsg').textContent = msg;
   toast.className = `toast show ${type}`;
-  setTimeout(() => toast.classList.remove('show'), 3000);
+  setTimeout(() => toast.classList.remove('show'), 3500);
 }
 
-// Close modal on backdrop click
 document.getElementById('editModal').addEventListener('click', e => {
   if (e.target === document.getElementById('editModal')) closeModal();
 });
