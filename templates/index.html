@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Heritage SYNC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1E8B1A;
+    --green-dark: #145E11;
+    --green-light: #E8F5E5;
+    --red: #D42030;
+    --red-light: #FDE8EA;
+    --cream: #F9FBF7;
+    --text: #1A2E18;
+    --text-muted: #5A7558;
+    --border: rgba(30,139,26,0.15);
+    --shadow: 0 20px 60px rgba(30,139,26,0.12);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  body {
+    font-family:'DM Sans',sans-serif;
+    background:var(--cream);
+    color:var(--text);
+    height:100vh;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* ── Header ── */
+  .app-header {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:10px 16px;
+    background:#fff;
+    border-bottom:2px solid var(--green-light);
+    z-index:100;
+    flex-shrink:0;
+    gap:10px;
+  }
+
+  .logo-wrap { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+  .logo-img {
+    height:38px; width:auto;
+    flex-shrink:0; object-fit:contain;
+  }
+  .logo-text h1 {
+    font-family:'Fraunces',serif; font-size:16px; font-weight:700;
+    color:var(--green-dark); line-height:1;
+    display:flex; align-items:center; gap:5px;
+  }
+  .logo-text h1 .sync-badge {
+    font-family:'DM Sans',sans-serif; font-size:11px; font-weight:700;
+    background:linear-gradient(135deg,var(--green),var(--green-dark));
+    color:#fff; padding:1px 6px; border-radius:5px;
+    letter-spacing:1px; vertical-align:middle;
+  }
+  .logo-text span { font-size:9px; font-weight:500; color:var(--text-muted); letter-spacing:1.2px; text-transform:uppercase; }
+
+  .header-right { display:flex; align-items:center; gap:8px; }
+
+  .counter-badge {
+    background:var(--green-light);
+    color:var(--green-dark);
+    font-size:11px; font-weight:600;
+    padding:4px 10px; border-radius:20px;
+    border:1px solid var(--border);
+    white-space:nowrap;
+  }
+
+  /* ── Category bar ── */
+  .category-bar {
+    display:flex; gap:8px;
+    padding:8px 16px;
+    overflow-x:auto;
+    background:#fff;
+    border-bottom:1px solid var(--border);
+    flex-shrink:0;
+    scrollbar-width:none;
+  }
+  .category-bar::-webkit-scrollbar { display:none; }
+  .cat-pill {
+    flex-shrink:0;
+    padding:5px 14px; border-radius:20px;
+    border:1.5px solid var(--border);
+    background:transparent;
+    color:var(--text-muted);
+    font-family:'DM Sans',sans-serif; font-size:12px; font-weight:500;
+    cursor:pointer; transition:all .2s; white-space:nowrap;
+  }
+  .cat-pill:hover { border-color:var(--green); color:var(--green); }
+  .cat-pill.active {
+    background:var(--green); border-color:var(--green); color:#fff;
+    box-shadow:0 3px 10px rgba(30,139,26,.25);
+  }
+
+  /* ── Stage ── */
+  .stage {
+    flex:1; position:relative; overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--cream);
+  }
+  .stage::before {
+    content:''; position:absolute; top:-80px; right:-80px;
+    width:300px; height:300px;
+    background:radial-gradient(circle,rgba(30,139,26,.06) 0%,transparent 70%);
+    border-radius:50%; pointer-events:none;
+  }
+  .stage::after {
+    content:''; position:absolute; bottom:-60px; left:-60px;
+    width:250px; height:250px;
+    background:radial-gradient(circle,rgba(212,32,48,.05) 0%,transparent 70%);
+    border-radius:50%; pointer-events:none;
+  }
+  .cards-container { width:100%; height:100%; position:relative; }
+
+  /* ── Card ── */
+  .card {
+    position:absolute; inset:0;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    padding:14px;
+    opacity:0; pointer-events:none; transition:none;
+  }
+  .card.active { opacity:1; pointer-events:all; animation:cardIn .45s cubic-bezier(.22,1,.36,1) forwards; }
+  .card.exit-left  { animation:exitLeft  .35s cubic-bezier(.4,0,1,1) forwards; }
+  .card.exit-right { animation:exitRight .35s cubic-bezier(.4,0,1,1) forwards; }
+  .card.enter-right { animation:enterRight .45s cubic-bezier(.22,1,.36,1) forwards; }
+  .card.enter-left  { animation:enterLeft  .45s cubic-bezier(.22,1,.36,1) forwards; }
+
+  @keyframes cardIn    { from{opacity:0;transform:scale(.94) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }
+  @keyframes exitLeft  { from{opacity:1;transform:translateX(0) scale(1)} to{opacity:0;transform:translateX(-120%) scale(.85)} }
+  @keyframes exitRight { from{opacity:1;transform:translateX(0) scale(1)} to{opacity:0;transform:translateX(120%) scale(.85)} }
+  @keyframes enterRight { from{opacity:0;transform:translateX(100%) scale(.9)} to{opacity:1;transform:translateX(0) scale(1)} }
+  @keyframes enterLeft  { from{opacity:0;transform:translateX(-100%) scale(.9)} to{opacity:1;transform:translateX(0) scale(1)} }
+
+  .card-inner {
+    background:#fff;
+    border-radius:20px;
+    box-shadow:var(--shadow), 0 2px 8px rgba(0,0,0,.06);
+    overflow:hidden;
+    width:100%; max-width:480px;
+    max-height:calc(100vh - 150px);
+    display:flex; flex-direction:column;
+    border:1px solid rgba(30,139,26,.08);
+  }
+
+  .card-image-wrap {
+    position:relative; width:100%; flex-shrink:0;
+    background:#f0f0f0; overflow:hidden;
+  }
+  .card-image-wrap img {
+    width:100%; aspect-ratio:1; object-fit:cover;
+    display:block; max-height:52vh;
+  }
+
+  /* Floating Take Quiz button — shown when current slide has a pending quiz */
+  .take-quiz-btn {
+    position:absolute; bottom:16px; left:50%; transform:translateX(-50%);
+    display:none; align-items:center; gap:7px;
+    background:var(--red); color:#fff;
+    font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700;
+    letter-spacing:.5px; padding:9px 22px; border-radius:30px; border:none;
+    cursor:pointer; box-shadow:0 4px 16px rgba(212,32,48,.4);
+    animation:quizBtnPop .35s cubic-bezier(.22,1,.36,1);
+    z-index:10; white-space:nowrap;
+  }
+  .take-quiz-btn:hover { background:#b8192a; transform:translateX(-50%) scale(1.04); }
+  @keyframes quizBtnPop { from{opacity:0;transform:translateX(-50%) translateY(12px) scale(.9)} to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)} }
+
+  .card-body { padding:13px 17px 15px; flex-shrink:0; }
+  .card-title {
+    font-family:'Fraunces',serif; font-size:18px; font-weight:700;
+    color:var(--text); margin-bottom:6px; line-height:1.2;
+  }
+  .card-divider {
+    width:36px; height:3px;
+    background:linear-gradient(to right,var(--green),var(--red));
+    border-radius:2px; margin:8px 0 0;
+  }
+
+  /* ── Listen to Summary button ── */
+  .listen-btn {
+    margin-top:11px;
+    display:inline-flex; align-items:center; gap:7px;
+    padding:7px 16px; border-radius:20px;
+    border:1.5px solid var(--border); background:#fff;
+    font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600;
+    cursor:pointer; color:var(--text-muted); transition:all .2s;
+  }
+  .listen-btn:hover { border-color:var(--green); color:var(--green); }
+  .listen-btn.playing { background:var(--green); border-color:var(--green); color:#fff; box-shadow:0 3px 10px rgba(30,139,26,.3); }
+  .listen-btn svg { flex-shrink:0; }
+
+  /* ── Nav bar ── */
+  .nav-bar {
+    display:flex; align-items:center; justify-content:center;
+    gap:14px; padding:10px 20px;
+    background:#fff; border-top:1px solid var(--border);
+    flex-shrink:0;
+  }
+  .nav-btn {
+    width:42px; height:42px; border-radius:50%;
+    border:1.5px solid var(--border); background:#fff;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:all .2s; color:var(--green);
+  }
+  .nav-btn:hover:not(:disabled) {
+    background:var(--green); border-color:var(--green); color:#fff;
+    transform:scale(1.05); box-shadow:0 4px 12px rgba(30,139,26,.25);
+  }
+  .nav-btn:disabled { opacity:.35; cursor:not-allowed; }
+  .nav-btn svg { width:18px; height:18px; }
+
+  .progress-wrap { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:0; }
+  .progress-bar-track { width:100%; max-width:200px; height:3px; background:var(--green-light); border-radius:2px; overflow:hidden; }
+  .progress-bar-fill { height:100%; background:linear-gradient(to right,var(--green),var(--red)); border-radius:2px; transition:width .35s ease; }
+  .progress-label { font-size:11px; color:var(--text-muted); font-weight:500; }
+
+  /* ── Loader ── */
+  .loader {
+    position:fixed; inset:0; background:#fff;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    z-index:999; transition:opacity .5s,visibility .5s;
+  }
+  .loader.hidden { opacity:0; visibility:hidden; }
+  .loader-logo-img {
+    height:80px; width:auto; object-fit:contain;
+    animation:pulse 1.5s ease-in-out infinite; margin-bottom:20px;
+  }
+  @keyframes pulse {
+    0%,100%{transform:scale(1);box-shadow:0 8px 30px rgba(30,139,26,.3)}
+    50%{transform:scale(1.06);box-shadow:0 12px 40px rgba(30,139,26,.45)}
+  }
+  .loader-title {
+    display:flex; align-items:center; gap:8px; margin-bottom:4px;
+  }
+  .loader h2 { font-family:'Fraunces',serif; font-size:22px; color:var(--green-dark); }
+  .loader-sync {
+    font-family:'DM Sans',sans-serif; font-size:14px; font-weight:700;
+    background:linear-gradient(135deg,var(--green),var(--green-dark));
+    color:#fff; padding:2px 8px; border-radius:6px; letter-spacing:1.5px;
+  }
+  .loader p  { font-size:11px; color:var(--text-muted); letter-spacing:2px; text-transform:uppercase; }
+  .loader-dots { display:flex; gap:6px; margin-top:24px; }
+  .loader-dots span {
+    width:7px; height:7px; background:var(--green); border-radius:50%;
+    animation:bounce 1.2s ease-in-out infinite;
+  }
+  .loader-dots span:nth-child(2){animation-delay:.2s;background:var(--red);}
+  .loader-dots span:nth-child(3){animation-delay:.4s;}
+  @keyframes bounce{0%,80%,100%{transform:scale(.6);opacity:.5}40%{transform:scale(1);opacity:1}}
+
+  /* ── Empty state ── */
+  .empty-state {
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    height:100%; color:var(--text-muted); gap:12px; text-align:center; padding:40px;
+  }
+  .empty-state svg { width:64px; height:64px; opacity:.3; }
+  .empty-state h3 { font-family:'Fraunces',serif; font-size:20px; color:var(--text); }
+
+  /* Swipe hint */
+  .swipe-hint {
+    position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
+    display:flex; align-items:center; gap:6px;
+    background:rgba(0,0,0,.55); color:#fff;
+    font-size:11px; padding:6px 14px; border-radius:20px;
+    animation:fadeHint 3s ease forwards; pointer-events:none; white-space:nowrap;
+  }
+  @keyframes fadeHint{0%,60%{opacity:1}100%{opacity:0}}
+
+  /* ── Quiz Modal ── */
+  .modal-bg {
+    position:fixed; inset:0;
+    background:rgba(0,0,0,.52);
+    backdrop-filter:blur(5px);
+    z-index:300;
+    display:none; align-items:center; justify-content:center;
+    padding:20px;
+  }
+  .modal-bg.show { display:flex; }
+
+  .quiz-card {
+    background:#fff; border-radius:20px;
+    padding:24px; max-width:430px; width:100%;
+    box-shadow:0 20px 60px rgba(0,0,0,.2);
+    animation:cardIn .4s ease;
+  }
+
+  .quiz-header {
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:5px;
+  }
+  .quiz-topic { font-size:10px; font-weight:700; letter-spacing:2px; color:var(--green); text-transform:uppercase; }
+  .quiz-counter { font-size:11px; font-weight:600; color:var(--text-muted); }
+
+  .quiz-q {
+    font-family:'Fraunces',serif; font-size:16px; line-height:1.45;
+    color:var(--text); margin:12px 0 16px;
+  }
+
+  .quiz-opts { display:flex; flex-direction:column; gap:8px; }
+  .quiz-opt {
+    padding:10px 14px; border-radius:10px;
+    border:1.5px solid var(--border); background:#fff;
+    text-align:left; font-family:'DM Sans',sans-serif;
+    font-size:13.5px; cursor:pointer; transition:all .18s; color:var(--text);
+    width:100%;
+  }
+  .quiz-opt:hover:not(:disabled) { border-color:var(--green); background:var(--green-light); }
+  .quiz-opt.correct { background:var(--green-light); border-color:var(--green); color:var(--green-dark); font-weight:600; }
+  .quiz-opt.wrong   { background:var(--red-light);   border-color:var(--red);   color:var(--red); }
+
+  .quiz-expl {
+    display:none; margin-top:12px; font-size:12.5px;
+    color:var(--text-muted); background:var(--green-light);
+    padding:9px 13px; border-radius:8px; line-height:1.55;
+  }
+  .quiz-expl.show { display:block; }
+
+  .quiz-progress-dots {
+    display:flex; gap:6px; justify-content:center; margin:14px 0 4px;
+  }
+  .q-dot {
+    width:8px; height:8px; border-radius:50%;
+    background:var(--border); transition:background .25s;
+  }
+  .q-dot.done-correct { background:var(--green); }
+  .q-dot.done-wrong   { background:var(--red); }
+  .q-dot.current      { background:var(--green-dark); transform:scale(1.3); }
+
+  .quiz-footer { display:flex; gap:10px; margin-top:16px; justify-content:space-between; align-items:center; }
+  .quiz-score-lbl { font-size:12px; font-weight:600; color:var(--text-muted); }
+  .btn-skip {
+    padding:8px 16px; border-radius:8px; border:1.5px solid var(--border);
+    background:transparent; font-family:'DM Sans',sans-serif;
+    font-size:13px; cursor:pointer; color:var(--text-muted);
+  }
+  .btn-next {
+    padding:8px 20px; border-radius:8px; border:none;
+    background:var(--green); color:#fff;
+    font-family:'DM Sans',sans-serif; font-size:13px;
+    font-weight:600; cursor:pointer;
+  }
+  .btn-next:hover { background:var(--green-dark); }
+
+  /* Results card */
+  .quiz-result {
+    text-align:center; padding:10px 0;
+  }
+  .result-ring {
+    width:80px; height:80px; border-radius:50%;
+    background:var(--green-light); border:3px solid var(--green);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces',serif; font-size:24px; font-weight:700;
+    color:var(--green-dark); margin:0 auto 12px;
+  }
+  .result-msg { font-size:14px; color:var(--text-muted); line-height:1.55; }
+
+  @media(max-width:400px){
+    .card-title{font-size:16px;}
+    .card-body{padding:10px 12px 12px;}
+    .card-inner{border-radius:16px;}
+    .counter-badge{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- Loader -->
+<div class="loader" id="loader">
+  <img src="/static/logo.png" class="loader-logo-img" alt="Heritage Logo">
+  <div class="loader-title">
+    <h2>Heritage</h2>
+    <span class="loader-sync">SYNC</span>
+  </div>
+  <p>Sales &amp; Knowledge Center</p>
+  <div class="loader-dots"><span></span><span></span><span></span></div>
+</div>
+
+<!-- Header --><header class="app-header">
+  <div class="logo-wrap">
+    <img src="/static/logo.png" class="logo-img" alt="Heritage Logo">
+    <div class="logo-text">
+      <h1>Heritage <span class="sync-badge">SYNC</span></h1>
+      <span>Sales &amp; Knowledge Center</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="counter-badge" id="counterBadge">1 / 40</div>
+  </div>
+</header>
+
+<!-- Category bar -->
+<div class="category-bar" id="categoryBar"></div>
+
+<!-- Stage -->
+<div class="stage" id="stage">
+  <div class="cards-container" id="cardsContainer"></div>
+  <button class="take-quiz-btn" id="takeQuizBtn" onclick="triggerQuizNow()">🎯 Take Quiz</button>
+</div>
+
+<!-- Nav -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <div class="progress-wrap">
+    <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel">1 of 40</div>
+  </div>
+  <button class="nav-btn" id="nextBtn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+</div>
+
+<!-- Quiz Modal -->
+<div class="modal-bg" id="quizModal">
+  <div class="quiz-card" id="quizCard"><!-- filled by JS --></div>
+</div>
+
+<script>
+// ─── Icons ───────────────────────────────────────────────────────────────────
+
+
+
+
+// ─── SECTION SUMMARIES — one per category, sales-rep focused ─────────────────
+// ─── SECTION SUMMARIES — plain text for audio playback ───────────────────────
+const SECTION_SUMMARY = {
+
+  'Company Overview': `Heritage Foods works with over 3 lakh farmers for direct milk procurement and serves more than 1 crore consumers every day. The brand is present in 17 states with 18 state-of-the-art processing plants. Every batch goes through 5 quality checkpoints and 25 quality tests, with 120-layer micron milk filters. Heritage is ISO Food Safety System certified, has won the National Energy Conservation Award 8 times, and holds the Golden Peacock Award for Corporate Governance. Key pitch: scale, trust, and unmatched quality infrastructure.`,
+
+  'Milk': `Heritage offers a clear fat ladder — Toned at 3%, Standardised at 4.5%, Full Cream at 6%, and A2 Buffalo at 7% — covering every consumer need. The UHT range requires no boiling and no refrigeration until opened: Farm Fresh lasts 180 days, and Toned Pouch lasts 90 days. Lite Fit at just 0.1% fat is ideal for calorie-conscious buyers. All variants are fortified with Vitamins A and D. Skimmed Milk Powder has a 12-month shelf life in 3 pack sizes — push it for hotels, restaurants, and food processing buyers.`,
+
+  'Paneer': `Heritage Fresh Paneer has a 30-day shelf life stored below 5 degrees — and this is critical: do NOT deep freeze, as it affects texture. Available in 200 grams, 500 grams, and 1 kilogram — covering retail, food service, and bulk buyers. It is rich in Protein and a source of Calcium, hygienically packed from freshly procured milk. Target grocery stores, restaurants, caterers, and cloud kitchens — versatile for cooking and snacking.`,
+
+  'Curd & Yogurt': `Heritage Total Curd has 3% fat for everyday use, while Creamilicious at 4.5% fat is the premium option — both taste like homemade curd. Key shelf life point: Pouch is 7 days, but Cup and Tub is 21 days — always push cup SKUs to retailers for longer channel life. Packs range from 100 grams to 20 kilograms, covering everything from retail to institutional buyers. Livo Yogurt is the high-protein play — 5.5 grams of protein with only 1.6% fat, targeting fitness-conscious consumers. Available in Strawberry, Blueberry, Mango, and Classic with no added sugar, in 90 gram cups and a 400 gram classic pack.`,
+
+  'Lassi': `Heritage Lassi comes in four variants — Sweet, Mango, Strawberry, and Sabja with Chia seeds. The UHT SIG Pack has a 180-day ambient shelf life, making it perfect for modern trade, gifting, and export channels. Sabja Lassi has prebiotic effects from Chia seeds — use this as a digestive wellness pitch to health-aware buyers. Overall positioning: a healthy and tasty substitute to carbonated beverages.`,
+
+  'Butter & Ghee': `Heritage Cow Ghee is a source of carotenoids and antioxidants supporting eye health and cognitive function, with Vitamins A, D, and E. Shelf life is 9 months for Jar and Poly, and 12 months for Tin, available in sizes from 12 ml to 15 litres. Buffalo Ghee is white in colour with butyric acid for intestinal health — a distinct segment. Hi-Aroma Ghee uses a slow extended cooking process for a long-lasting nutty aroma — position it as a premium 1-litre offering. Table Butter has a 12-month shelf life — push as a spread and flavour enhancer. Cooking Butter has a 4-month shelf life — ideal for bakeries, sweet shops, and dessert makers.`,
+
+  'Cheese': `Heritage Cheese Slice has a 9-month shelf life below 4 degrees — convenient and consistent melt, ideal for sandwiches and burgers. Cheese Block comes in 200 grams, 400 grams, and 1 kilogram — flexible for retail slicing and food service. Mozzarella is ready to cook — target quick service restaurants and cloud kitchens for pizza, pasta, burgers, and sandwiches. Key pitch: all Heritage Cheese is made from the highest quality Heritage Milk — leverage brand trust to cross-sell from the dairy aisle.`,
+
+  'Beverages': `Heritage Buttermilk comes in regular at 1.2 grams protein and A-One Probiotic at 4.1 grams protein — always upsell to the probiotic for a wellness angle. The SIG Pack Buttermilk has a 180-day shelf life — ideal for modern trade, vending, and travel retail. Flavoured Milk is 1.5% fat with a 120-day shelf life, available in glass and PP bottle — dual format for premium and everyday segments. Milkshake has 3.3 grams protein, 180-day shelf life, rich mouthfeel — 5 flavours including Cookies and Cream, and Chocolate Caramel. Cafe Latte can be served hot or cold, made with handpicked coffee beans — targets cafés, offices, and convenience stores. Gluco Shakti has 14.4% carbohydrates in Orange, Lemon, and Pineapple — instant energy and dehydration prevention; push to gyms, sports events, and outdoor channels.`,
+
+  'Sweets': `Heritage Ghee Laddus in Millet, Jowar, and Besan variants have a 60-day shelf life — no palm oil, no vegetable oil, made with Heritage Ghee and real almonds and cashews. Premium gifting product. Doodh Peda has a 30-day shelf life with a golden granular texture — available from 20 grams to 500 grams for retail impulse and bulk. Gulab Jamun and Rasgulla both have a 365-day shelf life — made with pure desi ghee, untouched by hands, strong food safety pitch. Push Gulab Jamun and Rasgulla for festivals, wedding catering, and year-round retail — they are your longest shelf life sweet SKUs.`,
+
+  'Ice Cream': `Heritage Ice Cream Cups come in 50, 70, and 90 ml — standard flavours plus the premium Alpenvie range. Stick products include Choco Bar, Tasty Kulfi, Juicy Sticks, Mango Masti, and Swiss Fantasy — target impulse and the kids segment. Cones range from Vanilla to Laddu Prasadam — unique SKUs that drive curiosity and trial. Novelties like Cassata, Mega Sundae, Belgium Chocolate, and Kohinoor Kulfi are your premium and gifting range, in 125 ml to 950 ml. Family Packs from 700 ml to 4 litres in 5 flavours — highest margin per transaction. Always push Family Packs for household stocking conversations.`,
+};
+
+
+
+// ─── QUIZ_BANK — keyed by CATEGORY, one quiz per section ─────────────────────
+// Fires at the end of each section with all questions from that category.
+const QUIZ_BANK = {
+
+  'Company Overview': { topic: 'Company Overview', qs: [
+    { q: 'How many farmers are associated with Heritage for direct milk procurement?',
+      opts: ['1L+', '2L+', '3L+', '5L+'], ans: 2,
+      expl: 'Heritage works with 3L+ (3 lakh+) farmers for direct milk procurement.' },
+    { q: 'In how many states does Heritage have a presence?',
+      opts: ['10', '14', '17', '21'], ans: 2,
+      expl: 'Heritage is present in 17 states across India.' },
+    { q: 'How many quality tests does Heritage milk undergo?',
+      opts: ['10', '15', '20', '25'], ans: 3,
+      expl: 'Heritage milk undergoes 5 checkpoints and 25 quality tests.' },
+  ]},
+
+  'Milk': { topic: 'Milk', qs: [
+    { q: 'What is the fat% in Heritage Toned Milk?',
+      opts: ['1.5%', '3.0%', '4.5%', '6.0%'], ans: 1,
+      expl: 'Toned Milk has 3.0% fat.' },
+    { q: 'What is the fat% in Heritage Full Cream Milk?',
+      opts: ['3.0%', '4.5%', '6.0%', '7.0%'], ans: 2,
+      expl: 'Full Cream Milk has 6.0% fat.' },
+    { q: 'What is the fat% in Sampurna A2 Buffalo Milk?',
+      opts: ['4.5%', '5.5%', '6.0%', '7.0%'], ans: 3,
+      expl: 'A2 Buffalo Milk has 7.0% fat — the highest in the range.' },
+    { q: 'What is the shelf life of Heritage UHT Toned Milk Pouch?',
+      opts: ['30 days', '60 days', '90 days', '120 days'], ans: 2,
+      expl: 'UHT Toned Milk Pouch has a 90-day shelf life at ambient temperature.' },
+    { q: 'What is the fat% in Heritage Lite Fit Milk?',
+      opts: ['0.1%', '1.0%', '2.0%', '3.0%'], ans: 0,
+      expl: 'Lite Fit Milk has only 0.1% fat — designed for health-conscious consumers.' },
+    { q: 'What is the shelf life of Heritage Skimmed Milk Powder?',
+      opts: ['3 months', '6 months', '9 months', '12 months'], ans: 3,
+      expl: 'Skimmed Milk Powder has a 12-month shelf life in cool & dry conditions.' },
+    { q: 'Skimmed Milk Powder is a rich source of?',
+      opts: ['Vitamin C & Iron', 'Protein & Calcium', 'Omega-3 & Zinc', 'Magnesium'], ans: 1,
+      expl: 'It is a rich source of Protein & Calcium and a good source of natural Minerals.' },
+  ]},
+
+  'Paneer': { topic: 'Paneer', qs: [
+    { q: 'What is the shelf life of Heritage Fresh Paneer?',
+      opts: ['10 days', '20 days', '30 days', '45 days'], ans: 2,
+      expl: 'Fresh Paneer has a 30-day shelf life when stored below 5°C.' },
+    { q: 'Heritage Fresh Paneer is available in which pack sizes?',
+      opts: ['100g, 200g, 500g', '200g, 500g, 1kg', '500g, 1kg, 2kg', '200g, 1kg, 5kg'], ans: 1,
+      expl: 'Fresh Paneer comes in 200g, 500g, and 1kg packs.' },
+    { q: 'What is the key storage instruction for Heritage Paneer?',
+      opts: ['Room temperature', 'Below 5°C, do not deep freeze', 'Below -10°C', 'Below 10°C only'], ans: 1,
+      expl: 'Store below 5°C and do not deep freeze to maintain quality.' },
+  ]},
+
+  'Curd & Yogurt': { topic: 'Curd & Yogurt', qs: [
+    { q: 'What is the fat% in Heritage Creamilicious Curd?',
+      opts: ['3.0%', '3.5%', '4.0%', '4.5%'], ans: 3,
+      expl: 'Creamilicious Curd has 4.5% fat — richer and creamier than Total Curd.' },
+    { q: 'What is the shelf life of Total Curd Pouch?',
+      opts: ['3 days', '5 days', '7 days', '21 days'], ans: 2,
+      expl: 'Total Curd Pouch has a 7-day shelf life when stored below 5°C.' },
+    { q: 'What is the shelf life of Total Curd Cup?',
+      opts: ['7 days', '14 days', '21 days', '30 days'], ans: 2,
+      expl: 'Total Curd Cup and Tub have a 21-day shelf life below 5°C.' },
+    { q: 'What is the protein content in Heritage Livo Yogurt?',
+      opts: ['2.5g', '3.3g', '4.0g', '5.5g'], ans: 3,
+      expl: 'Livo Yogurt has 5.5g of protein — making it a high-protein snack.' },
+    { q: 'What is the fat% in Heritage Livo Yogurt?',
+      opts: ['0.5%', '1.0%', '1.6%', '2.5%'], ans: 2,
+      expl: 'Livo Yogurt has only 1.6% fat — low fat and high protein.' },
+    { q: 'What pack sizes are available for Heritage Livo Yogurt?',
+      opts: ['50g & 100g', '75g & 200g', '90g (all variants) & 400g (classic)', '150g & 500g'], ans: 2,
+      expl: 'Livo Yogurt comes in 90g cups for all flavours and 400g for Classic.' },
+  ]},
+
+  'Lassi': { topic: 'Lassi', qs: [
+    { q: 'What seeds are in Heritage Sabja Lassi?',
+      opts: ['Flax seeds', 'Chia (Sabja) seeds', 'Sesame seeds', 'Sunflower seeds'], ans: 1,
+      expl: 'Sabja Lassi contains Chia (Sabja) seeds with prebiotic effects that aid digestion.' },
+    { q: 'What is the shelf life of Heritage Sweet Lassi UHT SIG Pack?',
+      opts: ['7 days', '30 days', '90 days', '180 days'], ans: 3,
+      expl: 'The UHT SIG Pack variant of Sweet Lassi has a 180-day shelf life.' },
+    { q: 'What is the carb% in Heritage Mango/Strawberry Lassi?',
+      opts: ['12%', '15.8%', '17.5%', '20%'], ans: 2,
+      expl: 'Mango and Strawberry Lassi have 17.5% carbohydrates.' },
+  ]},
+
+  'Butter & Ghee': { topic: 'Butter & Ghee', qs: [
+    { q: 'Which Heritage Ghee supports eye health and cognitive function?',
+      opts: ['Buffalo Ghee', 'Hi-Aroma Ghee', 'Cow Ghee', 'Cooking Ghee'], ans: 2,
+      expl: 'Cow Ghee is a source of carotenoids & anti-oxidants that support eye health and cognitive function.' },
+    { q: 'What is the shelf life of Heritage Cow Ghee Jar?',
+      opts: ['6 months', '9 months', '12 months', '18 months'], ans: 1,
+      expl: 'Cow Ghee Jar has a 9-month shelf life in cool & dry conditions.' },
+    { q: 'What makes Heritage Hi-Aroma Ghee unique?',
+      opts: ['Made from buffalo milk', 'White in colour', 'Slow extended cooking, long-lasting nutty aroma', '6-month shelf life'], ans: 2,
+      expl: 'Hi-Aroma Ghee uses a slow extended cooking process giving it a distinct nutty aroma.' },
+    { q: 'What is the shelf life of Heritage Table Butter (below 4°C)?',
+      opts: ['4 months', '6 months', '9 months', '12 months'], ans: 3,
+      expl: 'Table Butter has a 12-month shelf life when stored below 4°C.' },
+    { q: 'What is the shelf life of Heritage Cooking Butter (below 4°C)?',
+      opts: ['2 months', '4 months', '6 months', '9 months'], ans: 1,
+      expl: 'Cooking Butter has a 4-month shelf life when stored below 4°C.' },
+    { q: 'Heritage Butter is a source of which health-supporting nutrients?',
+      opts: ['Iron & Zinc', 'Carotenoids & anti-oxidants', 'Omega-3 fatty acids', 'B-vitamins'], ans: 1,
+      expl: 'Heritage Butter is a source of carotenoids & anti-oxidants supporting eye health and cognitive function.' },
+  ]},
+
+  'Cheese': { topic: 'Cheese', qs: [
+    { q: 'What is the shelf life of Heritage Cheese Slice (below 4°C)?',
+      opts: ['3 months', '6 months', '9 months', '12 months'], ans: 2,
+      expl: 'Cheese Slice has a 9-month shelf life when stored below 4°C.' },
+    { q: 'Heritage Cheese Block is available in which pack sizes?',
+      opts: ['100g, 200g', '200g, 400g, 1kg', '500g, 1kg', '200g, 500g, 2kg'], ans: 1,
+      expl: 'Cheese Block comes in 200g, 400g, and 1kg pack sizes.' },
+    { q: 'Heritage Mozzarella Cheese is ideally used in?',
+      opts: ['Tea & coffee', 'Bread spreads only', 'Pizza, pasta & burgers', 'Indian curries'], ans: 2,
+      expl: 'Mozzarella is ready to cook and ideal for pizza, pasta, burgers, and sandwiches.' },
+  ]},
+
+  'Beverages': { topic: 'Beverages', qs: [
+    { q: 'What is the protein content in A-One Probiotic Spiced Buttermilk?',
+      opts: ['1.2g', '2.5g', '4.1g', '5.0g'], ans: 2,
+      expl: 'A-One Probiotic has 4.1g protein — significantly higher than regular buttermilk (1.2g).' },
+    { q: 'What is the shelf life of Spiced Buttermilk SIG Pack?',
+      opts: ['5 days', '30 days', '90 days', '180 days'], ans: 3,
+      expl: 'Spiced Buttermilk SIG Pack has a 180-day shelf life at ambient temperature.' },
+    { q: 'What is the fat% in Heritage Flavoured Milk?',
+      opts: ['0.5%', '1.0%', '1.5%', '2.0%'], ans: 2,
+      expl: 'Heritage Flavoured Milk has 1.5% fat.' },
+    { q: 'Which Flavoured Milk flavour is ONLY in PP Bottle format?',
+      opts: ['Badam', 'Vanilla', 'Pista', 'Chocolate'], ans: 2,
+      expl: 'Pista is exclusive to the PP Bottle format. Glass bottles carry Badam, Vanilla, Chocolate, Strawberry.' },
+    { q: 'What is the shelf life of Heritage Milkshake?',
+      opts: ['30 days', '90 days', '120 days', '180 days'], ans: 3,
+      expl: 'Heritage Milkshake has a 180-day shelf life in cool & dry conditions.' },
+    { q: 'What is the shelf life of Heritage Cafe Latte PP Bottle?',
+      opts: ['30 days', '60 days', '90 days', '120 days'], ans: 3,
+      expl: 'Cafe Latte PP Bottle has a 120-day shelf life.' },
+    { q: 'Heritage Cafe Latte can be served how?',
+      opts: ['Only chilled', 'Only hot', 'Both hot and cold', 'Only as a mixer'], ans: 2,
+      expl: 'Cafe Latte can be served both hot and cold.' },
+    { q: 'What is the carb% in Heritage Gluco Shakti Orange?',
+      opts: ['10.5%', '12.0%', '14.4%', '17.5%'], ans: 2,
+      expl: 'All Gluco Shakti variants have 14.4% carbohydrates.' },
+    { q: 'What is the shelf life of Gluco Shakti (below 5°C)?',
+      opts: ['7 days', '15 days', '30 days', '60 days'], ans: 2,
+      expl: 'Gluco Shakti has a 30-day shelf life when stored below 5°C.' },
+  ]},
+
+  'Sweets': { topic: 'Sweets', qs: [
+    { q: 'What is the shelf life of Heritage Ghee Laddus?',
+      opts: ['15 days', '30 days', '60 days', '90 days'], ans: 2,
+      expl: 'All Ghee Laddus have a 60-day shelf life in cool & dry conditions.' },
+    { q: 'What is NOT used in Heritage Truly Good Laddus?',
+      opts: ['Heritage Ghee', 'Almonds & Cashews', 'Palm Oil or Vegetable Oil', 'Real Nuts'], ans: 2,
+      expl: 'No Palm Oil or Vegetable Oil is used in Heritage Truly Good Laddus.' },
+    { q: 'What is the shelf life of Heritage Gulab Jamun?',
+      opts: ['30 days', '90 days', '180 days', '365 days'], ans: 3,
+      expl: 'Gulab Jamun has a 365-day shelf life in cool & dry conditions.' },
+    { q: 'What is the shelf life of Heritage Doodh Peda?',
+      opts: ['10 days', '20 days', '30 days', '60 days'], ans: 2,
+      expl: 'Doodh Peda has a 30-day shelf life in cool & dry conditions.' },
+    { q: 'Heritage Rasgulla is made from?',
+      opts: ['Buffalo Milk', 'Pure Cow Milk', 'A2 Milk', 'Skimmed Milk'], ans: 1,
+      expl: 'Heritage Rasgulla is made from Pure Cow Milk using a traditional recipe.' },
+  ]},
+
+  'Ice Cream': { topic: 'Ice Cream', qs: [
+    { q: 'Heritage Ice Cream Family Packs are available in which sizes?',
+      opts: ['200ml–500ml', '500ml–1ltr', '700ml–4ltr', '1ltr–5ltr'], ans: 2,
+      expl: 'Family Packs range from 700ml to 4 litres.' },
+    { q: 'Which is a Heritage Ice Cream Novelty product?',
+      opts: ['Swiss Fantasy Stick', 'Juicy Sticks', 'Cassata & Mega Sundae', 'Choco Bar'], ans: 2,
+      expl: 'Cassata and Mega Sundae fall under the Novelties category (125ml–950ml).' },
+    { q: 'Heritage Ice Cream cups come in which sizes?',
+      opts: ['30ml, 50ml, 70ml', '50ml, 70ml, 90ml', '70ml, 90ml, 110ml', '90ml, 125ml, 200ml'], ans: 1,
+      expl: 'Heritage Ice Cream Cups are available in 50ml, 70ml, and 90ml sizes.' },
+  ]},
+};
+
+// ─── App state ───────────────────────────────────────────────────────────────
+let artworks       = [];
+let currentIndex   = 0;
+let currentCategory = 'All';
+let isAnimating    = false;
+const quizEnabled  = true;
+let quizShownFor   = new Set();
+
+// Touch
+let touchStartX = 0, touchStartY = 0;
+
+// ─── Is the current index the last slide of its category section? ─────────────
+function isLastInSection(index) {
+  if (artworks.length === 0) return false;
+  if (index >= artworks.length - 1) return true; // last card overall
+  return artworks[index].category !== artworks[index + 1].category;
+}
+
+// ─── Show/hide floating "Take Quiz" button (only on last slide of section) ────
+function updateTakeQuizBtn() {
+  const btn = document.getElementById('takeQuizBtn');
+  if (!btn) return;
+  if (!quizEnabled) { btn.style.display = 'none'; return; }
+  const art = artworks[currentIndex];
+  if (!art) { btn.style.display = 'none'; return; }
+  const pending = isLastInSection(currentIndex)
+    && QUIZ_BANK[art.category]
+    && !quizShownFor.has(art.category);
+  btn.style.display = pending ? 'flex' : 'none';
+}
+
+// ─── Check & fire quiz when leaving a section's last slide ───────────────────
+function maybeShowQuiz(leavingIndex) {
+  if (!quizEnabled) return Promise.resolve(false);
+  if (!isLastInSection(leavingIndex)) return Promise.resolve(false);
+  const art = artworks[leavingIndex];
+  if (!art) return Promise.resolve(false);
+  const cat = art.category;
+  if (!QUIZ_BANK[cat] || quizShownFor.has(cat)) return Promise.resolve(false);
+  quizShownFor.add(cat);
+  updateTakeQuizBtn();
+  return new Promise(resolve => showQuiz(QUIZ_BANK[cat], resolve));
+}
+
+// ─── Manual trigger from floating button ─────────────────────────────────────
+async function triggerQuizNow() {
+  const art = artworks[currentIndex];
+  if (!art) return;
+  const cat = art.category;
+  if (!QUIZ_BANK[cat] || quizShownFor.has(cat)) return;
+  quizShownFor.add(cat);
+  updateTakeQuizBtn();
+  await new Promise(resolve => showQuiz(QUIZ_BANK[cat], resolve));
+}
+function showQuiz(data, onClose) {
+  let qi = 0;
+  let score = 0;
+  const dotStates = data.qs.map(() => 'pending'); // 'pending' | 'correct' | 'wrong'
+
+  renderQuestion();
+
+  function buildDots() {
+    return data.qs.map((_, i) => {
+      let cls = 'q-dot';
+      if (i < qi)  cls += dotStates[i] === 'correct' ? ' done-correct' : ' done-wrong';
+      if (i === qi) cls += ' current';
+      return `<div class="${cls}"></div>`;
+    }).join('');
+  }
+
+  function renderQuestion() {
+    const q = data.qs[qi];
+    document.getElementById('quizCard').innerHTML = `
+      <div class="quiz-header">
+        <span class="quiz-topic">🎯 ${data.topic}</span>
+        <span class="quiz-counter">Q${qi+1} of ${data.qs.length}</span>
+      </div>
+      <p class="quiz-q">${q.q}</p>
+      <div class="quiz-opts">
+        ${q.opts.map((o,i)=>`<button class="quiz-opt" onclick="answerQ(${i})">${o}</button>`).join('')}
+      </div>
+      <div class="quiz-expl" id="quizExpl">${q.expl}</div>
+      <div class="quiz-progress-dots" id="quizDots">${buildDots()}</div>
+      <div class="quiz-footer">
+        <span class="quiz-score-lbl" id="quizScoreLbl">Score: ${score}/${qi}</span>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-skip" onclick="skipQuiz()">Skip all</button>
+          <button class="btn-next" id="quizNextBtn" style="display:none;" onclick="nextQuestion()">
+            ${qi < data.qs.length - 1 ? 'Next question →' : 'Finish →'}
+          </button>
+        </div>
+      </div>`;
+    document.getElementById('quizModal').classList.add('show');
+  }
+
+  window.answerQ = function(idx) {
+    const q = data.qs[qi];
+    const opts = document.querySelectorAll('.quiz-opt');
+    opts.forEach(b => b.disabled = true);
+    if (idx === q.ans) {
+      score++;
+      dotStates[qi] = 'correct';
+      opts[idx].classList.add('correct');
+    } else {
+      dotStates[qi] = 'wrong';
+      opts[idx].classList.add('wrong');
+      opts[q.ans].classList.add('correct');
+    }
+    document.getElementById('quizExpl').classList.add('show');
+    document.getElementById('quizNextBtn').style.display = 'block';
+    document.getElementById('quizScoreLbl').textContent = `Score: ${score}/${qi+1}`;
+    document.getElementById('quizDots').innerHTML = buildDots();
+  };
+
+  window.nextQuestion = function() {
+    qi++;
+    if (qi < data.qs.length) {
+      renderQuestion();
+    } else {
+      showResult();
+    }
+  };
+
+  function showResult() {
+    const pct = Math.round((score / data.qs.length) * 100);
+    const msg = pct === 100 ? 'Perfect score! Excellent knowledge.' :
+                pct >= 66   ? 'Good job! Review any missed points.' :
+                              "Keep studying — you'll nail it next time.";
+    document.getElementById('quizCard').innerHTML = `
+      <div class="quiz-result">
+        <div class="result-ring">${pct}%</div>
+        <div style="font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;">${data.topic} Complete</div>
+        <div class="result-msg">${msg}<br>You scored <strong>${score} out of ${data.qs.length}</strong>.</div>
+        <button class="btn-next" style="margin-top:18px;" onclick="closeQuiz()">Continue →</button>
+      </div>`;
+  }
+
+  // FIX 4: closeQuiz calls the Promise resolver so navigation always continues
+  window.skipQuiz = window.closeQuiz = function() {
+    document.getElementById('quizModal').classList.remove('show');
+    if (typeof onClose === 'function') onClose(true);
+  };
+}
+
+// ─── Categories ──────────────────────────────────────────────────────────────
+async function loadCategories() {
+  const res  = await fetch('/api/categories');
+  const cats = await res.json();
+  const bar  = document.getElementById('categoryBar');
+  bar.innerHTML = '';
+  cats.forEach(cat => {
+    const pill = document.createElement('button');
+    pill.className = 'cat-pill' + (cat === currentCategory ? ' active' : '');
+    pill.textContent = cat;
+    pill.onclick = async () => {
+      // If there's a pending quiz on the current slide, show it before switching
+      const pendingQuiz = await maybeShowQuiz(currentIndex);
+      currentCategory = cat;
+      document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      loadArtworks();
+    };
+    bar.appendChild(pill);
+  });
+}
+
+// ─── Artworks ────────────────────────────────────────────────────────────────
+async function loadArtworks() {
+  const url = currentCategory === 'All'
+    ? '/api/artworks'
+    : `/api/artworks?category=${encodeURIComponent(currentCategory)}`;
+  const res = await fetch(url);
+  artworks  = await res.json();
+  currentIndex = 0;
+  renderCards();
+  updateUI();
+}
+
+// ─── Render cards ─────────────────────────────────────────────────────────────
+function renderCards() {
+  const container = document.getElementById('cardsContainer');
+  container.innerHTML = '';
+
+  if (artworks.length === 0) {
+    container.innerHTML = `<div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+      <h3>No artworks found</h3>
+      <p>Try a different category</p>
+    </div>`;
+    return;
+  }
+
+  artworks.forEach((art, i) => {
+    const isLast = (i === artworks.length - 1) || (artworks[i].category !== artworks[i + 1].category);
+    const hasSummary = isLast && SECTION_SUMMARY[art.category];
+    const listenHTML = hasSummary ? `
+      <button class="listen-btn" id="listen-btn-${i}" onclick="toggleSummaryAudio(${i})">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0014 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77 0-4.28-2.99-7.86-7-8.77z"/></svg>
+        Listen to Summary
+      </button>` : '';
+    const card = document.createElement('div');
+    card.className = 'card' + (i === 0 ? ' active' : '');
+    card.id = `card-${i}`;
+    card.innerHTML = `
+      <div class="card-inner">
+        <div class="card-image-wrap">
+          <img src="/static/uploads/${encodeURIComponent(art.filename)}"
+               alt="${art.title}" loading="${i < 3 ? 'eager' : 'lazy'}">
+        </div>
+        <div class="card-body">
+          <div class="card-title">${art.title}</div>
+          <div class="card-divider"></div>
+          ${listenHTML}
+        </div>
+      </div>`;
+    container.appendChild(card);
+  });
+
+  if (!sessionStorage.getItem('hintShown')) {
+    const hint = document.createElement('div');
+    hint.className = 'swipe-hint';
+    hint.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Swipe or use arrow keys`;
+    document.getElementById('stage').appendChild(hint);
+    setTimeout(() => hint.remove(), 3200);
+    sessionStorage.setItem('hintShown', '1');
+  }
+}
+
+// ─── Summary audio ────────────────────────────────────────────────────────────
+let summaryPlaying = null; // index of currently playing summary
+
+function toggleSummaryAudio(i) {
+  const btn = document.getElementById(`listen-btn-${i}`);
+  const art = artworks[i];
+  if (!art) return;
+
+  // Stop anything currently speaking
+  if (window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    if (summaryPlaying === i) {
+      // Tapping again on same button = stop
+      summaryPlaying = null;
+      resetListenBtn(i);
+      return;
+    }
+    if (summaryPlaying !== null) resetListenBtn(summaryPlaying);
+  }
+
+  const text = `Section summary for ${art.category}. ${SECTION_SUMMARY[art.category]}`;
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.rate = 0.88;
+  utt.pitch = 1;
+  const voices = speechSynthesis.getVoices();
+  const voice = voices.find(v => v.lang === 'en-IN') || voices.find(v => v.lang.startsWith('en'));
+  if (voice) utt.voice = voice;
+
+  utt.onstart = () => {
+    summaryPlaying = i;
+    if (btn) {
+      btn.classList.add('playing');
+      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg> Stop`;
+    }
+  };
+  utt.onend = utt.onerror = () => { summaryPlaying = null; resetListenBtn(i); };
+  window.speechSynthesis.speak(utt);
+}
+
+function resetListenBtn(i) {
+  const btn = document.getElementById(`listen-btn-${i}`);
+  if (btn) {
+    btn.classList.remove('playing');
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0014 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77 0-4.28-2.99-7.86-7-8.77z"/></svg> Listen to Summary`;
+  }
+}
+
+function stopSummaryAudio() {
+  if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
+  if (summaryPlaying !== null) { resetListenBtn(summaryPlaying); summaryPlaying = null; }
+}
+window.speechSynthesis.onvoiceschanged = () => {};
+
+
+function showCard(newIndex, direction) {
+  if (isAnimating || artworks.length === 0) return;
+  stopSummaryAudio();
+  const oldCard = document.getElementById(`card-${currentIndex}`);
+  const newCard = document.getElementById(`card-${newIndex}`);
+  if (!newCard) return;
+  isAnimating = true;
+
+  oldCard.classList.remove('active');
+  oldCard.classList.add(direction === 'next' ? 'exit-left' : 'exit-right');
+  newCard.classList.add(direction === 'next' ? 'enter-right' : 'enter-left');
+  newCard.style.opacity = '1';
+  newCard.style.pointerEvents = 'all';
+
+  setTimeout(() => {
+    oldCard.classList.remove('exit-left', 'exit-right');
+    oldCard.style.opacity = '';
+    oldCard.style.pointerEvents = '';
+    newCard.classList.remove('enter-right', 'enter-left');
+    newCard.classList.add('active');
+    currentIndex = newIndex;
+    updateUI();
+    isAnimating = false;
+  }, 420);
+}
+
+// FIX 4: goNext is now async — awaits the quiz Promise before continuing
+async function goNext() {
+  if (currentIndex >= artworks.length - 1) return;
+  const from = currentIndex;
+  const to   = currentIndex + 1;
+
+  const quizFired = await maybeShowQuiz(from);
+  // Whether quiz fired or not, always proceed
+  if (!isAnimating) showCard(to, 'next');
+}
+
+function goPrev() {
+  if (currentIndex > 0) showCard(currentIndex - 1, 'prev');
+}
+
+function updateUI() {
+  const total = artworks.length;
+  const idx   = total > 0 ? currentIndex + 1 : 0;
+  document.getElementById('counterBadge').textContent  = `${idx} / ${total}`;
+  document.getElementById('progressLabel').textContent = `${idx} of ${total}`;
+  document.getElementById('progressFill').style.width  = total > 0 ? `${(idx/total)*100}%` : '0%';
+  document.getElementById('prevBtn').disabled = currentIndex === 0;
+  document.getElementById('nextBtn').disabled = currentIndex === total - 1;
+  updateTakeQuizBtn();
+}
+
+// ─── Autoplay ─────────────────────────────────────────────────────────────────
+document.getElementById('prevBtn').onclick = () => goPrev();
+document.getElementById('nextBtn').onclick = () => goNext();
+
+// ─── Keyboard ─────────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goNext();
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goPrev();
+  if (e.key === 'Escape') { if (typeof skipQuiz === 'function') skipQuiz(); }
+});
+
+// ─── Touch ────────────────────────────────────────────────────────────────────
+document.getElementById('stage').addEventListener('touchstart', e => {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
+
+document.getElementById('stage').addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+    dx < 0 ? goNext() : goPrev();
+  }
+}, { passive: true });
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+async function init() {
+  await loadCategories();
+  await loadArtworks();
+  setTimeout(() => document.getElementById('loader').classList.add('hidden'), 800);
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heritage Admin Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1E8B1A; --green-dark: #145E11; --green-light: #E8F5E5;
+    --red: #D42030; --red-light: #FDE8EA;
+    --white: #fff; --cream: #F9FBF7; --text: #1A2E18; --text-muted: #5A7558;
+    --border: rgba(30,139,26,0.15);
+    --sidebar: 260px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); display: flex; min-height: 100vh; }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: var(--sidebar); flex-shrink: 0;
+    background: var(--text);
+    display: flex; flex-direction: column;
+    padding: 0;
+    position: fixed; top: 0; left: 0; bottom: 0;
+    z-index: 100;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+  }
+
+  .sidebar-header {
+    padding: 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .sidebar-logo {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--green), var(--green-dark));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--red);
+    flex-shrink: 0;
+  }
+  .sidebar-logo svg { width: 22px; height: 22px; fill: white; }
+
+  .sidebar-title h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 16px; color: white; line-height: 1;
+  }
+  .sidebar-title span { font-size: 10px; color: rgba(255,255,255,0.45); letter-spacing: 1.5px; text-transform: uppercase; }
+
+  .sidebar-nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    color: rgba(255,255,255,0.6);
+    font-size: 13.5px; font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none; background: transparent; width: 100%; text-align: left;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.07); color: white; }
+  .nav-item.active { background: var(--green); color: white; }
+  .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  .sidebar-footer {
+    padding: 16px 12px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex; flex-direction: column; gap: 6px;
+  }
+
+  .sidebar-footer a {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 14px; border-radius: 10px;
+    color: rgba(255,255,255,0.5); font-size: 13px; text-decoration: none;
+    transition: all 0.2s;
+  }
+  .sidebar-footer a:hover { background: rgba(255,255,255,0.07); color: white; }
+  .sidebar-footer a svg { width: 15px; height: 15px; }
+
+  /* ── Main ── */
+  .main { margin-left: var(--sidebar); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+  .topbar {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 16px 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .topbar h1 { font-family: 'Fraunces', serif; font-size: 20px; color: var(--text); }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+  .stats-strip {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 16px; padding: 20px 28px 0;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 14px;
+    padding: 16px 18px;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; gap: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  }
+  .stat-icon {
+    width: 42px; height: 42px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .stat-icon svg { width: 20px; height: 20px; }
+  .stat-icon.green { background: var(--green-light); color: var(--green); }
+  .stat-icon.red { background: var(--red-light); color: var(--red); }
+  .stat-icon.blue { background: #E3F2FD; color: #1565C0; }
+  .stat-icon.orange { background: #FFF3E0; color: #E65100; }
+  .stat-value { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; color: var(--text); }
+  .stat-label { font-size: 11.5px; color: var(--text-muted); }
+
+  /* ── Upload area ── */
+  .content { padding: 20px 28px 40px; flex: 1; }
+
+  .panel {
+    background: white; border-radius: 16px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    overflow: hidden; margin-bottom: 20px;
+  }
+
+  .panel-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .panel-header h3 { font-family: 'Fraunces', serif; font-size: 16px; }
+  .panel-header svg { width: 18px; height: 18px; color: var(--green); }
+  .panel-body { padding: 20px; }
+
+  /* Upload drop zone */
+  .drop-zone {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .drop-zone:hover, .drop-zone.dragover {
+    border-color: var(--green);
+    background: var(--green-light);
+  }
+  .drop-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+  .drop-zone svg { width: 40px; height: 40px; color: var(--green); margin-bottom: 10px; }
+  .drop-zone p { font-size: 14px; color: var(--text-muted); }
+  .drop-zone strong { color: var(--green); }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group label { font-size: 12px; font-weight: 600; color: var(--text); letter-spacing: 0.4px; }
+  .form-group input, .form-group select, .form-group textarea {
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: var(--cream);
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(30,139,26,0.08);
+    background: white;
+  }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+
+  .upload-preview {
+    display: none;
+    margin-top: 12px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .upload-preview img { width: 100%; max-height: 200px; object-fit: contain; background: #f5f5f5; }
+
+  .btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn svg { width: 15px; height: 15px; }
+  .btn-primary { background: var(--green); color: white; }
+  .btn-primary:hover { background: var(--green-dark); box-shadow: 0 4px 12px rgba(30,139,26,0.25); }
+  .btn-danger { background: var(--red-light); color: var(--red); }
+  .btn-danger:hover { background: var(--red); color: white; }
+  .btn-ghost { background: transparent; color: var(--text-muted); border: 1.5px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--green); color: var(--green); }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+  /* ── Grid ── */
+  .artworks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .artwork-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .artwork-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.08); transform: translateY(-2px); }
+  .artwork-card.inactive { opacity: 0.5; }
+
+  .artwork-thumb {
+    width: 100%; aspect-ratio: 1;
+    object-fit: cover; display: block;
+    background: #f0f0f0;
+  }
+
+  .artwork-info { padding: 10px 12px; }
+  .artwork-info h4 { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .artwork-info .cat-badge {
+    display: inline-block;
+    font-size: 10px; font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: var(--green-light);
+    color: var(--green-dark);
+    letter-spacing: 0.3px;
+    margin-bottom: 8px;
+  }
+  .artwork-info .desc { font-size: 11.5px; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 10px; }
+
+  .artwork-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  /* Filter bar */
+  .filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .filter-bar input {
+    flex: 1; min-width: 180px;
+    padding: 9px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .filter-bar input:focus { border-color: var(--green); }
+  .filter-bar select { padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; background: white; }
+
+  /* Edit modal */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    display: none; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.show { display: flex; animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .modal {
+    background: white;
+    border-radius: 20px;
+    padding: 28px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    animation: modalIn 0.3s cubic-bezier(0.22,1,0.36,1);
+  }
+  @keyframes modalIn { from { transform: scale(0.9) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+
+  .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .modal-header h3 { font-family: 'Fraunces', serif; font-size: 18px; }
+  .modal-close { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--border); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: all 0.2s; }
+  .modal-close:hover { background: var(--red-light); border-color: var(--red); color: var(--red); }
+  .modal-close svg { width: 14px; height: 14px; }
+  .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--text);
+    color: white;
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 500;
+    z-index: 999;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
+    display: flex; align-items: center; gap: 8px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { background: var(--green-dark); }
+  .toast.error { background: var(--red); }
+  .toast svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  @media (max-width: 900px) {
+    .sidebar { width: 60px; }
+    .sidebar-header .sidebar-title, .nav-item span, .sidebar-footer a span { display: none; }
+    .main { margin-left: 60px; }
+    .stats-strip { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+    </div>
+    <div class="sidebar-title">
+      <h2>Heritage</h2>
+      <span>Admin Panel</span>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <button class="nav-item active" onclick="showSection('upload')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3l5 5h-3v4h-4v-4H7l5-5z"/></svg>
+      <span>Upload Artwork</span>
+    </button>
+    <button class="nav-item" onclick="showSection('manage')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+      <span>Manage Artworks</span>
+    </button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a href="/" target="_blank">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+      <span>View Sales App</span>
+    </a>
+    <a href="/admin/logout">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+      <span>Logout</span>
+    </a>
+  </div>
+</aside>
+
+<!-- Main -->
+<main class="main">
+  <div class="topbar">
+    <h1 id="pageTitle">Upload Artwork</h1>
+    <div class="topbar-right">
+      <span style="font-size:13px;color:var(--text-muted);">Heritage Sales Admin</span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-strip" id="statsStrip">
+    <div class="stat-card">
+      <div class="stat-icon green"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></div>
+      <div><div class="stat-value" id="statTotal">–</div><div class="stat-label">Total Artworks</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg></div>
+      <div><div class="stat-value" id="statActive">–</div><div class="stat-label">Active Slides</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon orange"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg></div>
+      <div><div class="stat-value" id="statCats">–</div><div class="stat-label">Categories</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon red"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></div>
+      <div><div class="stat-value" id="statInactive">–</div><div class="stat-label">Hidden</div></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Upload Section -->
+    <div id="section-upload">
+      <div class="panel">
+        <div class="panel-header">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3l5 5h-3v4h-4v-4H7l5-5z"/></svg>
+          <h3>Upload New Artwork</h3>
+        </div>
+        <div class="panel-body">
+          <div class="drop-zone" id="dropZone">
+            <input type="file" id="fileInput" accept="image/*">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+            <p><strong>Click to browse</strong> or drag & drop image here</p>
+            <p style="font-size:12px;margin-top:4px;">JPG, PNG, GIF, WEBP supported</p>
+          </div>
+
+          <div class="upload-preview" id="uploadPreview">
+            <img id="previewImg" src="" alt="Preview">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>TITLE *</label>
+              <input type="text" id="uploadTitle" placeholder="e.g. Heritage Full Cream Milk">
+            </div>
+            <div class="form-group">
+              <label>CATEGORY</label>
+              <select id="uploadCategory">
+                {% for cat in categories %}
+                <option value="{{ cat }}">{{ cat }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top:14px;">
+            <label>DESCRIPTION</label>
+            <textarea id="uploadDesc" placeholder="Brief product description for the sales team..."></textarea>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:16px;">
+            <button class="btn btn-primary" onclick="uploadArtwork()">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+              Upload Artwork
+            </button>
+            <button class="btn btn-ghost" onclick="clearUploadForm()">Clear</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Manage Section -->
+    <div id="section-manage" style="display:none;">
+      <div class="filter-bar">
+        <input type="text" id="searchInput" placeholder="🔍  Search artworks..." oninput="filterArtworks()">
+        <select id="filterCategory" onchange="filterArtworks()">
+          <option value="">All Categories</option>
+          {% for cat in categories %}
+          <option value="{{ cat }}">{{ cat }}</option>
+          {% endfor %}
+        </select>
+        <button class="btn btn-ghost btn-sm" onclick="loadAllArtworks()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+          Refresh
+        </button>
+      </div>
+      <div class="artworks-grid" id="artworksGrid"></div>
+    </div>
+
+  </div>
+</main>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Edit Artwork</h3>
+      <button class="modal-close" onclick="closeModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <input type="hidden" id="editId">
+    <div class="form-group" style="margin-bottom:14px;">
+      <label>TITLE</label>
+      <input type="text" id="editTitle">
+    </div>
+    <div class="form-group" style="margin-bottom:14px;">
+      <label>CATEGORY</label>
+      <select id="editCategory">
+        {% for cat in categories %}
+        <option value="{{ cat }}">{{ cat }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group" style="margin-bottom:14px;">
+      <label>DESCRIPTION</label>
+      <textarea id="editDesc" style="min-height:100px;"></textarea>
+    </div>
+    <div class="form-group">
+      <label>VISIBILITY</label>
+      <select id="editActive">
+        <option value="1">Visible (Active)</option>
+        <option value="0">Hidden (Inactive)</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+  <span id="toastMsg">Done!</span>
+</div>
+
+<script>
+let allArtworks = [];
+
+function showSection(name) {
+  document.getElementById('section-upload').style.display = name === 'upload' ? '' : 'none';
+  document.getElementById('section-manage').style.display = name === 'manage' ? '' : 'none';
+  document.getElementById('pageTitle').textContent = name === 'upload' ? 'Upload Artwork' : 'Manage Artworks';
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  if (name === 'manage') loadAllArtworks();
+}
+
+// ── Stats ──
+async function loadStats() {
+  try {
+    const res = await fetch('/api/artworks/all');
+    const data = await res.json();
+    allArtworks = data;
+    const active = data.filter(a => a.is_active);
+    const cats = new Set(data.map(a => a.category));
+    document.getElementById('statTotal').textContent = data.length;
+    document.getElementById('statActive').textContent = active.length;
+    document.getElementById('statCats').textContent = cats.size;
+    document.getElementById('statInactive').textContent = data.length - active.length;
+  } catch(e) { console.error(e); }
+}
+
+// ── Upload ──
+const fileInput = document.getElementById('fileInput');
+const dropZone = document.getElementById('dropZone');
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) previewFile(file);
+});
+
+fileInput.addEventListener('change', () => { if (fileInput.files[0]) previewFile(fileInput.files[0]); });
+
+function previewFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('previewImg').src = e.target.result;
+    document.getElementById('uploadPreview').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+  if (!document.getElementById('uploadTitle').value) {
+    document.getElementById('uploadTitle').value = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+  }
+}
+
+async function uploadArtwork() {
+  const file = fileInput.files[0];
+  if (!file) { showToast('Please select an image file', 'error'); return; }
+  const title = document.getElementById('uploadTitle').value.trim();
+  if (!title) { showToast('Please enter a title', 'error'); return; }
+
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('title', title);
+  fd.append('description', document.getElementById('uploadDesc').value);
+  fd.append('category', document.getElementById('uploadCategory').value);
+
+  try {
+    const res = await fetch('/api/artwork', { method: 'POST', body: fd });
+    const data = await res.json();
+    if (data.success) {
+      showToast('Artwork uploaded successfully!', 'success');
+      clearUploadForm();
+      loadStats();
+    } else {
+      showToast(data.error || 'Upload failed', 'error');
+    }
+  } catch(e) { showToast('Upload failed', 'error'); }
+}
+
+function clearUploadForm() {
+  fileInput.value = '';
+  document.getElementById('uploadTitle').value = '';
+  document.getElementById('uploadDesc').value = '';
+  document.getElementById('uploadPreview').style.display = 'none';
+}
+
+// ── Manage ──
+async function loadAllArtworks() {
+  const res = await fetch('/api/artworks/all');
+  allArtworks = await res.json();
+  renderGrid(allArtworks);
+}
+
+function filterArtworks() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const cat = document.getElementById('filterCategory').value;
+  const filtered = allArtworks.filter(a => {
+    const matchQ = !q || a.title.toLowerCase().includes(q) || a.description.toLowerCase().includes(q);
+    const matchCat = !cat || a.category === cat;
+    return matchQ && matchCat;
+  });
+  renderGrid(filtered);
+}
+
+function renderGrid(artworks) {
+  const grid = document.getElementById('artworksGrid');
+  if (artworks.length === 0) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">No artworks found</div>';
+    return;
+  }
+  grid.innerHTML = artworks.map(a => `
+    <div class="artwork-card ${a.is_active ? '' : 'inactive'}" id="ac-${a.id}">
+      <img class="artwork-thumb" src="/static/uploads/${encodeURIComponent(a.filename)}" alt="${a.title}" loading="lazy">
+      <div class="artwork-info">
+        <div class="cat-badge">${a.category}</div>
+        <h4 title="${a.title}">${a.title}</h4>
+        <p class="desc">${a.description || '–'}</p>
+        <div class="artwork-actions">
+          <button class="btn btn-ghost btn-sm" onclick="openEdit(${a.id})">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+            Edit
+          </button>
+          <button class="btn btn-sm ${a.is_active ? 'btn-ghost' : 'btn-primary'}" onclick="toggleActive(${a.id}, ${a.is_active})">
+            ${a.is_active ? 'Hide' : 'Show'}
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="deleteArtwork(${a.id}, '${a.title.replace(/'/g,'\\\'') }')">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openEdit(id) {
+  const a = allArtworks.find(x => x.id === id);
+  if (!a) return;
+  document.getElementById('editId').value = id;
+  document.getElementById('editTitle').value = a.title;
+  document.getElementById('editDesc').value = a.description;
+  document.getElementById('editCategory').value = a.category;
+  document.getElementById('editActive').value = a.is_active;
+  document.getElementById('editModal').classList.add('show');
+}
+
+function closeModal() { document.getElementById('editModal').classList.remove('show'); }
+
+async function saveEdit() {
+  const id = document.getElementById('editId').value;
+  await fetch(`/api/artwork/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      title: document.getElementById('editTitle').value,
+      description: document.getElementById('editDesc').value,
+      category: document.getElementById('editCategory').value,
+      is_active: parseInt(document.getElementById('editActive').value)
+    })
+  });
+  closeModal();
+  showToast('Saved successfully!', 'success');
+  await loadAllArtworks();
+  loadStats();
+}
+
+async function toggleActive(id, current) {
+  const a = allArtworks.find(x => x.id === id);
+  if (!a) return;
+  await fetch(`/api/artwork/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title: a.title, description: a.description, category: a.category, is_active: current ? 0 : 1 })
+  });
+  showToast(current ? 'Artwork hidden' : 'Artwork shown', 'success');
+  await loadAllArtworks();
+  loadStats();
+}
+
+async function deleteArtwork(id, title) {
+  if (!confirm(`Delete "${title}"? This cannot be undone.`)) return;
+  await fetch(`/api/artwork/${id}`, { method: 'DELETE' });
+  showToast('Artwork deleted', 'success');
+  await loadAllArtworks();
+  loadStats();
+}
+
+// ── Toast ──
+function showToast(msg, type = 'success') {
+  const toast = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  toast.className = `toast show ${type}`;
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// Close modal on backdrop click
+document.getElementById('editModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('editModal')) closeModal();
+});
+
+// Init
+loadStats();
+</script>
+</body>
+</html>

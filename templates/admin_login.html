@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heritage Admin Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1E8B1A; --green-dark: #145E11; --red: #D42030;
+    --white: #FFFFFF; --cream: #F9FBF7; --text: #1A2E18; --text-muted: #5A7558;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Background pattern */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: radial-gradient(circle at 20% 20%, rgba(30,139,26,0.05) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 80%, rgba(212,32,48,0.04) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .login-card {
+    background: white;
+    border-radius: 24px;
+    padding: 48px 40px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 20px 60px rgba(30,139,26,0.12), 0 4px 12px rgba(0,0,0,0.06);
+    border: 1px solid rgba(30,139,26,0.1);
+    position: relative;
+    z-index: 1;
+    animation: slideUp 0.5s cubic-bezier(0.22,1,0.36,1) forwards;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .login-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 32px;
+  }
+
+  .logo-circle {
+    width: 72px; height: 72px;
+    background: linear-gradient(135deg, var(--green), var(--green-dark));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    border: 3px solid var(--red);
+    box-shadow: 0 8px 24px rgba(30,139,26,0.3);
+    margin-bottom: 16px;
+  }
+  .logo-circle svg { width: 36px; height: 36px; fill: white; }
+
+  .login-logo h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 26px;
+    color: var(--green-dark);
+  }
+  .login-logo p { font-size: 11px; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+
+  .divider {
+    width: 40px; height: 3px;
+    background: linear-gradient(to right, var(--green), var(--red));
+    border-radius: 2px;
+    margin: 16px auto 0;
+  }
+
+  .form-group { margin-bottom: 20px; }
+  label { display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px; letter-spacing: 0.5px; }
+
+  input[type=password] {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1.5px solid rgba(30,139,26,0.2);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    background: var(--cream);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  input[type=password]:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(30,139,26,0.1);
+  }
+
+  .login-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--green), var(--green-dark));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    letter-spacing: 0.3px;
+    margin-top: 4px;
+  }
+  .login-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(30,139,26,0.3); }
+  .login-btn:active { transform: translateY(0); }
+
+  .error-msg {
+    background: #FDE8EA;
+    border: 1px solid rgba(212,32,48,0.2);
+    color: var(--red);
+    font-size: 13px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    display: none;
+    text-align: center;
+  }
+  .error-msg.show { display: block; animation: shake 0.3s ease; }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+
+  .back-link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+  .back-link:hover { color: var(--green); }
+
+  .hint { font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 12px; }
+</style>
+</head>
+<body>
+<div class="login-card">
+  <div class="login-logo">
+    <div class="logo-circle">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+    </div>
+    <h1>Heritage Admin</h1>
+    <p>Sales Training Portal</p>
+    <div class="divider"></div>
+  </div>
+
+  <div class="error-msg" id="errorMsg">Incorrect password. Please try again.</div>
+
+  <div class="form-group">
+    <label>ADMIN PASSWORD</label>
+    <input type="password" id="passwordInput" placeholder="Enter admin password" autofocus>
+  </div>
+
+  <button class="login-btn" id="loginBtn">Sign In →</button>
+
+  <a href="/" class="back-link">← Back to Sales View</a>
+  <p class="hint">Default: Heritage@2024</p>
+</div>
+
+<script>
+async function login() {
+  const pwd = document.getElementById('passwordInput').value;
+  const btn = document.getElementById('loginBtn');
+  const err = document.getElementById('errorMsg');
+
+  btn.textContent = 'Signing in...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pwd })
+    });
+    const data = await res.json();
+    if (data.success) {
+      window.location.href = '/admin';
+    } else {
+      err.classList.add('show');
+      btn.textContent = 'Sign In →';
+      btn.disabled = false;
+    }
+  } catch {
+    err.classList.add('show');
+    btn.textContent = 'Sign In →';
+    btn.disabled = false;
+  }
+}
+
+document.getElementById('loginBtn').onclick = login;
+document.getElementById('passwordInput').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+</script>
+</body>
+</html>
